@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using static AdrenalineSolver.LevelSolver;
 
 namespace AdrenalineSolver
 {
-    class Solver
+    public class Runner
     {
         const int gridWidth = 11;
         const int gridHeight = 11;
@@ -26,19 +28,54 @@ namespace AdrenalineSolver
             [targetColor] = Tile.Target,
         };
 
-        public Bitmap Go()
+        public Tile[,] TileGrid { get; private set; }
+
+        public Bitmap AnalyseBitmap()
         {
             var bitmap = PinvokeHelpers.GetAdrenalineBitmap();
-            var tileGrid = GetTileGrid(bitmap);
-
-            var solution = SolveLevel(tileGrid);
+            this.TileGrid = GetTileGrid(bitmap);
 
             return bitmap;
         }
 
-        private object SolveLevel(Tile[,] tileGrid)
+        public async Task Run()
         {
-            return null;
+            var solver = new LevelSolver(this.TileGrid);
+            var solution = solver.SolveLevel();
+
+            foreach (var move in solution)
+            {
+                await ExecuteMove(move);
+            }
+        }
+
+        private async Task ExecuteMove(Move move)
+        {
+            WindowsVirtualKey virtualKey = WindowsVirtualKey.Up;
+
+            switch (move.direction)
+            {
+                case Direction.Up:
+                    virtualKey = WindowsVirtualKey.Up;
+                    break;
+                case Direction.Down:
+                    virtualKey = WindowsVirtualKey.Down;
+                    break;
+                case Direction.Left:
+                    virtualKey = WindowsVirtualKey.Left;
+                    break;
+                case Direction.Right:
+                    virtualKey = WindowsVirtualKey.Right;
+                    break;
+
+                case Direction.None:
+                    return;
+            }
+
+            var distance = Math.Max(Math.Abs(move.start.x - move.end.x), Math.Abs(move.start.y - move.end.y));
+            var timeToHold = 30 * distance;
+
+            await PinvokeHelpers.SendKeyPress(virtualKey, timeToHold);
         }
 
         private Tile[,] GetTileGrid(Bitmap bitmap)
@@ -85,14 +122,6 @@ namespace AdrenalineSolver
                     bitmap.SetPixel(x, y, color);
                 }
             }
-        }
-
-        public enum Tile
-        {
-            Floor,
-            Wall,
-            Target,
-            Player,
         }
 
         public Tile GetTileFromBitmapColor(Color color)

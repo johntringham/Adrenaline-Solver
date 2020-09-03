@@ -17,7 +17,8 @@
         </Image>
 
         <UniformGrid Grid.Row="1" Columns="5">
-            <Button Click="GoButtonPress">Go</Button>
+            <Button Click="GoButtonPress">Go (Solve One)</Button>
+            <Button Click="GoContinualButtonPress">Go (Solve All)</Button>
             <Button Click="UpButtonPress">Up</Button>
             <Button Click="DownButtonPress">Down</Button>
             <Button Click="LeftButtonPress">Left</Button>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace AdrenalineSolver
 {
@@ -30,7 +31,6 @@ namespace AdrenalineSolver
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool SetForegroundWindow(IntPtr hWnd);
-
 
         const int WM_KEYDOWN = 0x0100;
 
@@ -63,10 +63,11 @@ namespace AdrenalineSolver
             return screenshotHelper.CaptureWindow(hwnd, 118, 101, 97, 103);
         }
 
-        public static async Task SendKeyPress(WindowsVirtualKey key)
+        public static async Task SendKeyPress(WindowsVirtualKey key, int holdTime = 50)
         {
             SetGameWindowFocus();
-            await SendKeypressForALittleWhile(key);
+            await SendKeypressForALittleWhile(key, holdTime);
+            Application.Current.MainWindow.Activate();
         }
 
         public static void SetGameWindowFocus()
@@ -74,14 +75,14 @@ namespace AdrenalineSolver
             SetForegroundWindow(GetAdrenalineWindowHandle());
         }
 
-        private static async Task SendKeypressForALittleWhile(WindowsVirtualKey key)
+        private static async Task SendKeypressForALittleWhile(WindowsVirtualKey key, int holdTime)
         {
             var hwnd = GetAdrenalineWindowHandle();
 
             // absolutely insane usage of async here john, fix it up
-            var t = Task.Delay(20);
+            var t = Task.Delay(holdTime);
             while (!t.IsCompleted)
-            {
+            {   
                 SendMessage(hwnd.ToInt32(), WM_KEYDOWN, (int)key, 1);
             }
 

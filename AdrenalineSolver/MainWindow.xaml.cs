@@ -27,13 +27,31 @@ namespace AdrenalineSolver
             InitializeComponent();
         }
 
-        private void GoButtonPress(object sender, RoutedEventArgs e)
+        private async void GoButtonPress(object sender, RoutedEventArgs e)
         {
-            var solver = new Solver();
-            
+            var runner = new Runner();
+            await UpdateBitmap(runner);
+
+            await runner.Run();
+        }
+
+        private async void GoContinualButtonPress(object sender, RoutedEventArgs e)
+        {
+            while (true)
+            {
+                var runner = new Runner();
+                await UpdateBitmap(runner);
+                await runner.Run();
+
+                await Task.Delay(300);
+            }
+        }
+
+        private async Task UpdateBitmap(Runner runner)
+        {
             try
             {
-                var bitmap = solver.Go();
+                var bitmap = runner.AnalyseBitmap();
                 var imageSource = BitmapToImageSource(bitmap);
                 this.DisplayImage.Source = imageSource;
             }
@@ -59,25 +77,33 @@ namespace AdrenalineSolver
             }
         }
 
-        private void UpButtonPress(object sender, RoutedEventArgs e)
+        private async void UpButtonPress(object sender, RoutedEventArgs e)
         {
-            PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Up);
+            await PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Up);
+            await Task.Delay(500);
+            await this.UpdateBitmap(new Runner());
         }
 
-        private void DownButtonPress(object sender, RoutedEventArgs e)
+        private async void DownButtonPress(object sender, RoutedEventArgs e)
         {
-            PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Down);
+            await PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Down);
+            await Task.Delay(500);
+            await this.UpdateBitmap(new Runner());
         }
 
-        private void LeftButtonPress(object sender, RoutedEventArgs e)
+        private async void LeftButtonPress(object sender, RoutedEventArgs e)
         {
-            PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Left);
+            await PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Left);
+            await Task.Delay(500);
+            await this.UpdateBitmap(new Runner());
 
         }
 
-        private void RightButtonPress(object sender, RoutedEventArgs e)
+        private async void RightButtonPress(object sender, RoutedEventArgs e)
         {
-            PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Right);
+            await PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Right);
+            await Task.Delay(500);
+            await this.UpdateBitmap(new Runner());
         }
     }
 }
