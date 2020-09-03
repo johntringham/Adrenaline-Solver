@@ -58,5 +58,26 @@ namespace AdrenalineSolver
                 return bitmapimage;
             }
         }
+
+        private void UpButtonPress(object sender, RoutedEventArgs e)
+        {
+            PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Up);
+        }
+
+        private void DownButtonPress(object sender, RoutedEventArgs e)
+        {
+            PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Down);
+        }
+
+        private void LeftButtonPress(object sender, RoutedEventArgs e)
+        {
+            PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Left);
+
+        }
+
+        private void RightButtonPress(object sender, RoutedEventArgs e)
+        {
+            PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Right);
+        }
     }
 }

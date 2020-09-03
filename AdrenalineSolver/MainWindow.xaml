@@ -15,7 +15,13 @@
 
         <Image x:Name="DisplayImage">
         </Image>
-        
-        <Button Click="GoButtonPress" Grid.Row="1">Go</Button>
+
+        <UniformGrid Grid.Row="1" Columns="5">
+            <Button Click="GoButtonPress">Go</Button>
+            <Button Click="UpButtonPress">Up</Button>
+            <Button Click="DownButtonPress">Down</Button>
+            <Button Click="LeftButtonPress">Left</Button>
+            <Button Click="RightButtonPress">Right</Button>
+        </UniformGrid>
     </Grid>
 </Window>

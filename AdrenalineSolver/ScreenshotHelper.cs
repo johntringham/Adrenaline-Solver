@@ -90,13 +90,13 @@ namespace AdrenalineSolver
             public int bottom;
         }
 
-        public Bitmap CaptureWindow(IntPtr hWnd)
+        public Bitmap CaptureWindow(IntPtr hWnd, int topTrim, int leftTrim, int rightTrim, int bottomTrim)
         {
             RECT region;
 
             GetWindowRect(hWnd, out region);
 
-            return this.CaptureRegion(Rectangle.FromLTRB(region.left, region.top, region.right, region.bottom));
+            return this.CaptureRegion(Rectangle.FromLTRB(region.left + leftTrim, region.top + topTrim, region.right - rightTrim, region.bottom - bottomTrim));
         }
     }
 }
