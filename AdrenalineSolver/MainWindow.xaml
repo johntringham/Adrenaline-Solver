@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AdrenalineSolver"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Adrena-line solver" Height="585" Width="630" FontSize="20">
     <Grid>
 
         <Grid.RowDefinitions>
@@ -16,9 +16,15 @@
         <Image x:Name="DisplayImage">
         </Image>
 
-        <UniformGrid Grid.Row="1" Columns="5">
-            <Button Click="GoButtonPress">Go (Solve One)</Button>
-            <Button Click="GoContinualButtonPress">Go (Solve All)</Button>
+        <UniformGrid Grid.Row="2" Columns="5">
+            <TextBlock Text="Input delay" HorizontalAlignment="Center"/>
+            <Button Click="AnalyseButtonPress">Analyse</Button>
+            <Button Click="GoButtonPress">Solve One</Button>
+            <Button Click="GoContinualButtonPress">Solve All</Button>
+            <Button Click="StopButtonPress">Stop</Button>
+            
+            <Slider Minimum="0" Maximum="1000" x:Name="SpeedSlider" ValueChanged="SpeedSliderValueChanged" Value="150"/>
+
             <Button Click="UpButtonPress">Up</Button>
             <Button Click="DownButtonPress">Down</Button>
             <Button Click="LeftButtonPress">Left</Button>

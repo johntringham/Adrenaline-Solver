@@ -22,32 +22,45 @@ namespace AdrenalineSolver
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool continualSolve;
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        public static int Delay { get; set; }
+
         private async void GoButtonPress(object sender, RoutedEventArgs e)
         {
             var runner = new Runner();
-            await UpdateBitmap(runner);
-
+            UpdateBitmap(runner);
+            await Task.Delay(100);
             await runner.Run();
+
+            // show the next one after the run finished
+            await Task.Delay(200);
+            runner = new Runner();
+            UpdateBitmap(runner);
         }
 
         private async void GoContinualButtonPress(object sender, RoutedEventArgs e)
         {
-            while (true)
-            {
-                var runner = new Runner();
-                await UpdateBitmap(runner);
-                await runner.Run();
+            continualSolve = true;
 
+            var runner = new Runner();
+            UpdateBitmap(runner);
+
+            while (continualSolve)
+            {
                 await Task.Delay(300);
+                await runner.Run();
+                await Task.Delay(200);
+                UpdateBitmap(runner);
             }
         }
 
-        private async Task UpdateBitmap(Runner runner)
+        private void UpdateBitmap(Runner runner)
         {
             try
             {
@@ -81,21 +94,21 @@ namespace AdrenalineSolver
         {
             await PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Up);
             await Task.Delay(500);
-            await this.UpdateBitmap(new Runner());
+            this.UpdateBitmap(new Runner());
         }
 
         private async void DownButtonPress(object sender, RoutedEventArgs e)
         {
             await PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Down);
             await Task.Delay(500);
-            await this.UpdateBitmap(new Runner());
+            this.UpdateBitmap(new Runner());
         }
 
         private async void LeftButtonPress(object sender, RoutedEventArgs e)
         {
             await PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Left);
             await Task.Delay(500);
-            await this.UpdateBitmap(new Runner());
+            this.UpdateBitmap(new Runner());
 
         }
 
@@ -103,7 +116,22 @@ namespace AdrenalineSolver
         {
             await PinvokeHelpers.SendKeyPress(WindowsVirtualKey.Right);
             await Task.Delay(500);
-            await this.UpdateBitmap(new Runner());
+            this.UpdateBitmap(new Runner());
+        }
+
+        private void SpeedSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Delay = (int)this.SpeedSlider.Value;
+        }
+
+        private void StopButtonPress(object sender, RoutedEventArgs e)
+        {
+            this.continualSolve = false;
+        }
+
+        private void AnalyseButtonPress(object sender, RoutedEventArgs e)
+        {
+            this.UpdateBitmap(new Runner());
         }
     }
 }

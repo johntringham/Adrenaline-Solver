@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,20 +29,50 @@ namespace AdrenalineSolver
             [targetColor] = Tile.Target,
         };
 
-        public Tile[,] TileGrid { get; private set; }
+        private Tile[,] tileGrid;
+        private List<Move> solution;
 
         public Bitmap AnalyseBitmap()
         {
             var bitmap = PinvokeHelpers.GetAdrenalineBitmap();
-            this.TileGrid = GetTileGrid(bitmap);
+            this.tileGrid = GetTileGrid(bitmap);
+
+            var solver = new LevelSolver(this.tileGrid);
+            this.solution = solver.SolveLevel().ToList();
+
+            DrawSolutionOnBitmap(bitmap);
 
             return bitmap;
         }
 
+        private void DrawSolutionOnBitmap(Bitmap bitmap)
+        {
+            var tileSize = bitmap.Width / gridWidth;
+            var halfCellSize = tileSize / 2;
+
+            foreach (var move in solution)
+            {
+                var startPos = (x:move.start.x * tileSize + halfCellSize, y: move.start.y * tileSize + halfCellSize);
+                var endPos = (x:move.end.x * tileSize + halfCellSize, y: move.end.y * tileSize + halfCellSize);
+
+                var top = Math.Min(startPos.y, endPos.y) - 3;
+                var bottom = Math.Max(startPos.y, endPos.y) + 3;
+                var left = Math.Min(startPos.x, endPos.x) - 3;
+                var right = Math.Max(startPos.x, endPos.x) + 3;
+
+                var rect = Rectangle.FromLTRB(left, top, right, bottom);
+                DrawRectangleOnBitmap(bitmap, rect, Color.Green);
+            }
+        }
+
         public async Task Run()
         {
-            var solver = new LevelSolver(this.TileGrid);
-            var solution = solver.SolveLevel();
+            await Task.Yield();
+
+            if(solution == null)
+            {
+                throw new Exception("Can't execute solution as bitmap analysis failed");
+            }
 
             foreach (var move in solution)
             {
@@ -73,7 +104,7 @@ namespace AdrenalineSolver
             }
 
             var distance = Math.Max(Math.Abs(move.start.x - move.end.x), Math.Abs(move.start.y - move.end.y));
-            var timeToHold = 30 * distance;
+            var timeToHold = (30 * distance) + MainWindow.Delay;
 
             await PinvokeHelpers.SendKeyPress(virtualKey, timeToHold);
         }
@@ -105,7 +136,7 @@ namespace AdrenalineSolver
 
                     grid[x, y] = GetTileFromBitmapColor(pixelColor);
 
-                    var rect = new System.Drawing.Rectangle(xPoint, yPoint, 20, 20);
+                    var rect = new System.Drawing.Rectangle(xPoint - halfWidth, yPoint - halfHeight, cellWidth, cellHeight);
                     DrawRectangleOnBitmap(bitmap, rect, pixelColor);
                 }
             }
